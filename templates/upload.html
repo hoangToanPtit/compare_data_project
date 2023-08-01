@@ -1,0 +1,46 @@
+<!doctype html>
+<title>Upload CSV Files</title>
+<h1>Upload CSV Files</h1>
+<form method=post enctype=multipart/form-data onsubmit="return checkFiles();">
+    <div id="fileUploads">
+        <input type=file name=file1 accept=".csv">
+    </div>
+    <button type="button" onclick="addFileInput()">Add another file</button>
+    <br />
+    <label for="merge_column">Merge Columns (separated by comma):</label>
+    <input type=text name=merge_column id="merge_column">
+    <label for="merge_type">Merge Type:</label>
+    <select name="merge_type">
+        <option value="inner">Inner</option>
+        <option value="outer">Outer</option>
+        <option value="left">Left</option>
+        <option value="right">Right</option>
+    </select>
+    <input type=submit value=Upload>
+</form>
+<script>
+    var fileInputCount = 1;
+    function addFileInput() {
+        fileInputCount += 1;
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.name = 'file' + fileInputCount;
+        input.accept = '.csv';
+        document.getElementById('fileUploads').appendChild(input);
+    }
+    function checkFiles() {
+        var uploads = document.getElementById('fileUploads').getElementsByTagName('input');
+        for (var i = 0; i < uploads.length; i++) {
+            if (uploads[i].files.length == 0) {
+                alert('Please select files to upload');
+                return false;
+            }
+        }
+        var merge_column = document.getElementById('merge_column');
+        if (merge_column.value == '') {
+            alert('Please input merge columns');
+            return false;
+        }
+        return true;
+    }
+</script>
