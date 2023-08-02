@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'upload'
 
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         merge_column = request.form.get('merge_column')
