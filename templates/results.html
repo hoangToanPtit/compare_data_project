@@ -9,9 +9,7 @@
 <hr>
 {% endfor %}
 <h2>Merged Results</h2>
-<form method="get" action="/download">
-    <button type="submit">Download Merged File</button>
-</form>
+<a href="{{ url_for('download_file', filename=result_file) }}">Download Merged File</a>
 <table>
     {{ merged_df.to_html(index=False, classes='data') | safe }}
 </table>

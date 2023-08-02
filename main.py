@@ -1,3 +1,4 @@
+import time
 from flask import Flask, request, render_template, render_template_string, send_file
 import pandas as pd
 import os
@@ -20,6 +21,8 @@ def upload_file():
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(file_path)
             df = pd.read_csv(file_path)
+
+            os.remove(file_path)
            
             df.columns = df.columns.str.strip()
             dfs.append(df)
@@ -35,9 +38,16 @@ def upload_file():
             merged_df = merged_df.merge(df, on=merge_columns, how=merge_type)
         merged_df = merged_df.fillna('')
 
-        return render_template('results.html', dfs=dfs, merged_df=merged_df)
+        result_file_name = f'result_{time.time()}.csv'
+        merged_df.to_csv(result_file_name, index=False)
+
+        return render_template('results.html', dfs=dfs, merged_df=merged_df, result_file=result_file_name)
 
     return render_template('upload.html')
+
+@app.route('/download/<filename>')
+def download_file(filename):
+    return send_file(filename, as_attachment=True)
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
