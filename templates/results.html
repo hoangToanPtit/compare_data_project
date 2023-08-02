@@ -1,15 +1,82 @@
 <!doctype html>
-<title>CSV Merge Results</title>
-<h1>CSV Merge Results</h1>
-{% for df in dfs %}
-<h2>File {{ loop.index }}</h2>
-<table>
-    {{ df.to_html(index=False, classes='data') | safe }}
-</table>
-<hr>
-{% endfor %}
-<h2>Merged Results</h2>
-<a href="{{ url_for('download_file', filename=result_file) }}">Download Merged File</a>
-<table>
-    {{ merged_df.to_html(index=False, classes='data') | safe }}
-</table>
+<html>
+
+<head>
+    <title>CSV Merge Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding-bottom: 50px;
+        }
+
+        h3 {
+            margin-bottom: -10px;
+        }
+
+        table {
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 800px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            border-collapse: collapse;
+            table-layout: auto;
+        }
+
+        td,
+        th {
+            text-align: center;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        a {
+            display: inline-block;
+            margin-bottom: 25px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        a:hover {
+            background-color: #45a049;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>CSV Merge Results</h1>
+        <a href="{{ url_for('download_file', filename=result_file) }}">Download Merged File</a>
+        {% for df, filename in dfs %}
+        <h3>File {{ loop.index }}: {{ filename }}</h3>
+        <table>
+            {{ df.to_html(index=False, classes='data') | safe }}
+        </table>
+        {% endfor %}
+        <h3>Merged Results</h3>
+        <table>
+            {{ merged_df.to_html(index=False, classes='data') | safe }}
+        </table>
+    </div>
+</body>
+
+</html>

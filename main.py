@@ -22,19 +22,20 @@ def upload_file():
             file.save(file_path)
             df = pd.read_csv(file_path)
 
+            dfs.append((df, file.filename))
+            
             os.remove(file_path)
            
             df.columns = df.columns.str.strip()
-            dfs.append(df)
             i += 1
 
         for column in merge_columns:
-            for df in dfs:
+            for df, filename in dfs:
                 if column not in df.columns:
                     return render_template_string('<p>Error: Column "{}" not found in all files.</p>'.format(column))
 
-        merged_df = dfs[0]
-        for df in dfs[1:]:
+        merged_df = dfs[0][0]
+        for df, filename in dfs[1:]:
             merged_df = merged_df.merge(df, on=merge_columns, how=merge_type)
         merged_df = merged_df.fillna('')
 
