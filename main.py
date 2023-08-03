@@ -34,7 +34,6 @@ def calculate_expression(row, columns, ops):
                 result /= val
     return result
 
-
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
@@ -43,6 +42,7 @@ def upload_file():
         merge_type = request.form.get('merge_type')
         compare_formula = request.form.get('compare_formula')
         dfs = []
+        dfs_limited = []
         i = 1
         while True:
             file = request.files.get('file' + str(i))
@@ -51,8 +51,12 @@ def upload_file():
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(file_path)
             df = pd.read_csv(file_path)
+            limited_df = df.head(5)  # Giới hạn số dòng tối đa của DataFrame
+            limited_df.insert(0, '#', range(1, 1 + len(limited_df)))  # Thêm cột số thứ tự
+            limited_html = limited_df.to_html(index=False) + '...'
 
             dfs.append((df, file.filename))
+            dfs_limited.append((limited_df, limited_html, file.filename))  # Lưu các DataFrame đã giới hạn và HTML
             
             os.remove(file_path)
             
@@ -68,6 +72,7 @@ def upload_file():
         for df, filename in dfs[1:]:
             merged_df = merged_df.merge(df, on=merge_columns, how=merge_type)
         merged_df = merged_df.fillna('')
+        merged_df.insert(0, '#', range(1, 1 + len(merged_df)))  # Thêm cột số thứ tự
 
         if compare_formula:
             parts = compare_formula.split("=")
@@ -88,11 +93,10 @@ def upload_file():
                 cols.remove('compare_result')
                 merged_df = merged_df[cols + ['compare_result']]
 
-
         result_file_name = f'result_{time.time()}.csv'
         merged_df.to_csv(result_file_name, index=False)
 
-        return render_template('results.html', dfs=dfs, merged_df=merged_df, result_file=result_file_name)
+        return render_template('results.html', dfs=dfs_limited, merged_df=merged_df, result_file=result_file_name)
 
     return render_template('upload.html')
 
@@ -109,4 +113,3 @@ def is_convertable_to_float(value):
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
-

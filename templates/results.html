@@ -66,10 +66,10 @@
     <div class="container">
         <h1>CSV Merge Results</h1>
         <a href="{{ url_for('download_file', filename=result_file) }}">Download Merged File</a>
-        {% for df, filename in dfs %}
+        {% for df, html, filename in dfs %}
         <h3>File {{ loop.index }}: {{ filename }}</h3>
         <table>
-            {{ df.to_html(index=False, classes='data') | safe }}
+            {{ html | safe }}
         </table>
         {% endfor %}
         <h3>Merged Results</h3>
